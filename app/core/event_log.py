@@ -16,5 +16,18 @@ class EventLogger:
         }
 
         self.events.append(event)
+        print(f"[{event_type}] | {payload}", flush=True)
 
         return event
+
+
+    def trace(self, execution_id, step, agent, status, payload=None):
+
+        event_type = f"{agent}_{status}".upper()
+
+        payload = payload or {}
+        payload["step"] = step
+        payload["agent"] = agent
+        payload["status"] = status
+
+        return self.log(execution_id, event_type, payload)

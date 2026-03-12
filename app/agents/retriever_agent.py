@@ -1,4 +1,4 @@
-from sentence_transformers import SentenceTransformer
+
 from sqlalchemy import text
 from db.db import engine
 from core.event_log import EventLogger
@@ -14,7 +14,14 @@ class RetrieverAgent:
     def run(self, state):
 
         question = state.goal
-        self.logger.log("retriever_started", {"goal": state.goal})
+        
+        self.logger.trace(
+            state.execution_id,
+            "retrieve_policy_documents",
+            "RetrieverAgent",
+            "started",
+            {"goal": state.goal}
+        )
 
         # Create embedding
         embedding = self.model.encode(question).tolist()
@@ -38,6 +45,14 @@ class RetrieverAgent:
             })
 
         state.retrieved_docs = docs
-        self.logger.log("retriever_finished", {"docs_found": len(docs)})
+        
+        self.logger.trace(
+            state.execution_id,
+            "retrieve_policy_documents",
+            "RetrieverAgent",
+            "completed",
+            {"docs_found": len(state.retrieved_docs)}
+        )
+        
 
         return state

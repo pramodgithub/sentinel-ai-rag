@@ -41,3 +41,14 @@ CREATE TABLE document_chunks (
     metadata JSONB,
     created_at TIMESTAMP DEFAULT NOW()
 );
+
+CREATE TABLE audit_logs (
+    id SERIAL PRIMARY KEY,
+    execution_id TEXT,
+    incident_id TEXT,
+    agent TEXT,
+    step TEXT,
+    status TEXT,
+    payload JSONB,
+    created_at TIMESTAMP DEFAULT NOW()
+);

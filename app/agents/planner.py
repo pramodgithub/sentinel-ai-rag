@@ -11,40 +11,36 @@ class PlannerAgent:
 
     def run(self, state: ExecutionState):
 
-        self.logger.log(
+        self.logger.trace(
             state.execution_id,
-            "PLANNER_STARTED",
+            "Planner",
+            "PlannerAgent",
+            "started",
             {"goal": state.goal}
         )
-
         prompt = f"""
-                You are the planning agent of an AI system.
+                You are an incident response planner.
 
-                Your job is to create an execution plan using ONLY the available system capabilities.
+                Incident:
+                {incident}
 
-                Available capabilities:
-                - retrieve_policy_documents
-                - analyze_policy_rules
-                - generate_answer
+                Diagnosis:
+                {diagnosis}
 
-                User Question:
-                {state.goal}
+                Create a remediation plan.
 
-                Rules:
-                - Use only the capabilities listed above
-                - Do not invent new steps
-                - Do not include explanations
-                - Do not number the steps
+                Available actions:
+                - check_logs
+                - inspect_metrics
+                - restart_container
+                - monitor_service
+                - close_incident
 
-                Return ONLY valid JSON in this format:
+                Return ONLY JSON:
 
-                {{
-                "plan":[
-                "retrieve_policy_documents",
-                "analyze_policy_rules",
-                "generate_answer"
-                ]
-                }}
+                {
+                "plan": ["step1","step2","step3"]
+                }
                 """
 
         response = self.llm.generate(prompt)
@@ -52,9 +48,11 @@ class PlannerAgent:
         plan = json.loads(response)["plan"]
         state.plan = plan
 
-        self.logger.log(
+        self.logger.trace(
             state.execution_id,
-            "PLANNER_COMPLETED",
+            "Planner",
+            "PlannerAgent",
+            "completed",
             {"plan": plan}
         )
 
